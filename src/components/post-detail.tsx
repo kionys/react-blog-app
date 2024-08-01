@@ -5,7 +5,7 @@ export default function PostDetail() {
     <>
       <div className="post__detail">
         <div className="post__box">
-          <div className="post__title">post title</div>
+          <div className="post__title">post detail</div>
           <div className="post__profile-box">
             <div className="post__profile" />
             <div className="post__author-name">김기원</div>

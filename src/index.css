@@ -207,6 +207,8 @@ a:hover {
 .profile__logout {
   color: gray;
   font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
 }
 .profile__logout:hover,
 .profile__logout:focus {
@@ -394,4 +396,34 @@ input:checked + .carousel__slide-container .nav label {
 .form__link:hover,
 .form__link:focus {
   color: black;
+}
+.form__error {
+  color: red;
+}
+
+@keyframes rotation {
+  from {
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.loader {
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  border: 5px dotted #2563eb;
+  border-radius: 50%;
+  z-index: 9999;
+  animation: rotation 4s linear infinite;
 }
