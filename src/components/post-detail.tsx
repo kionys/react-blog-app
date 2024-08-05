@@ -39,7 +39,7 @@ export default function PostDetail() {
                 삭제
               </div>
               <div className="post__edit">
-                <Link to={`/posts/edit/1`} onClick={onClickPostEdit}>
+                <Link to={`/posts/edit/${post.id}`} onClick={onClickPostEdit}>
                   수정
                 </Link>
               </div>
