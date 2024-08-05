@@ -2,12 +2,15 @@ import AuthContext from "context/auth-context";
 import { db } from "firebase-app";
 import {
   collection,
+  deleteDoc,
+  doc,
   DocumentData,
   getDocs,
   QuerySnapshot,
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface PostListProps {
   hasNavigation?: boolean;
@@ -34,12 +37,23 @@ export default function PostList({ hasNavigation = true }: PostListProps) {
       const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
         collection(db, "posts"),
       );
+      // posts 초기화
+      setPosts([]);
       querySnapshot.forEach(doc => {
         const postData = { ...doc.data(), id: doc.id };
         setPosts(prev => [...prev, postData as PostProps]);
       });
     } catch (error) {
       console.error("Error getting documents: ", error);
+    }
+  };
+
+  const onClickPostDelete = async (id: string) => {
+    const confirm = window.confirm("해당 게시글을 삭제하시겠습니까?");
+    if (confirm && id) {
+      await deleteDoc(doc(db, "posts", id));
+      toast.success("게시글을 삭제했습니다.");
+      getPosts(); // 변경된 post 리스트를 다시 가져옴
     }
   };
 
@@ -81,7 +95,12 @@ export default function PostList({ hasNavigation = true }: PostListProps) {
               </Link>
               {user?.email === post?.email && (
                 <div className="post__utils-box">
-                  <div className="post__delete">삭제</div>
+                  <div
+                    className="post__delete"
+                    onClick={() => onClickPostDelete(post?.id as string)}
+                  >
+                    삭제
+                  </div>
                   <Link to={`/posts/edit/${post.id}`} className="post__edit">
                     수정
                   </Link>
