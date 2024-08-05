@@ -27,13 +27,25 @@ export interface PostProps {
   createdAt: string;
   updateAt?: string;
   uid: string;
+  category?: CategoryType;
 }
+
+export type CategoryType = "Frontend" | "Backend" | "Web" | "Native";
+export const CATEGORIES: CategoryType[] = [
+  "Frontend",
+  "Backend",
+  "Web",
+  "Native",
+];
+
 export default function PostList({
   hasNavigation = true,
   defaultTab = "all",
 }: PostListProps) {
   const { user } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
+  const [activeTab, setActiveTab] = useState<TabType | CategoryType>(
+    defaultTab,
+  );
   const [posts, setPosts] = useState<PostProps[]>([]);
 
   // posts 컬렉션의 모든 문서를 가져온다.
@@ -51,9 +63,16 @@ export default function PostList({
           where("uid", "==", user.uid),
           orderBy("createdAt", "asc"),
         );
-      } else {
+      } else if (activeTab === "all") {
         // 모든 글 보여주기
         postsQuery = query(postsRef, orderBy("createdAt", "asc"));
+      } else {
+        // 카테고리 글 보여주기
+        postsQuery = query(
+          postsRef,
+          where("category", "==", activeTab),
+          orderBy("createdAt", "asc"),
+        );
       }
 
       const querySnapshot = await getDocs(postsQuery);
@@ -98,6 +117,18 @@ export default function PostList({
           >
             나의 글
           </div>
+          {CATEGORIES?.map(category => (
+            <div
+              key={category}
+              role="presentaion"
+              className={
+                activeTab === category ? "post__navigation--active" : ""
+              }
+              onClick={() => setActiveTab(category)}
+            >
+              {category}
+            </div>
+          ))}
         </div>
       )}
       <div className="post__list">
