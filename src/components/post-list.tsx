@@ -4,9 +4,10 @@ import {
   collection,
   deleteDoc,
   doc,
-  DocumentData,
   getDocs,
-  QuerySnapshot,
+  orderBy,
+  query,
+  where,
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -14,6 +15,7 @@ import { toast } from "react-toastify";
 
 interface PostListProps {
   hasNavigation?: boolean;
+  defaultTab?: TabType;
 }
 type TabType = "all" | "my";
 export interface PostProps {
@@ -22,23 +24,40 @@ export interface PostProps {
   email: string;
   summary: string;
   content: string;
-  createAt: string;
+  createdAt: string;
   updateAt?: string;
   uid: string;
 }
-export default function PostList({ hasNavigation = true }: PostListProps) {
+export default function PostList({
+  hasNavigation = true,
+  defaultTab = "all",
+}: PostListProps) {
   const { user } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState<TabType>("all");
+  const [activeTab, setActiveTab] = useState<TabType>(defaultTab);
   const [posts, setPosts] = useState<PostProps[]>([]);
 
   // posts 컬렉션의 모든 문서를 가져온다.
   const getPosts = async () => {
     try {
-      const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
-        collection(db, "posts"),
-      );
       // posts 초기화
       setPosts([]);
+      let postsRef = collection(db, "posts");
+      let postsQuery;
+
+      if (activeTab === "my" && user) {
+        // 나의 글만 필터링
+        postsQuery = query(
+          postsRef,
+          where("uid", "==", user.uid),
+          orderBy("createdAt", "asc"),
+        );
+      } else {
+        // 모든 글 보여주기
+        postsQuery = query(postsRef, orderBy("createdAt", "asc"));
+      }
+
+      const querySnapshot = await getDocs(postsQuery);
+
       querySnapshot.forEach(doc => {
         const postData = { ...doc.data(), id: doc.id };
         setPosts(prev => [...prev, postData as PostProps]);
@@ -59,7 +78,8 @@ export default function PostList({ hasNavigation = true }: PostListProps) {
 
   useEffect(() => {
     getPosts();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
   return (
     <>
       {hasNavigation && (
@@ -88,7 +108,7 @@ export default function PostList({ hasNavigation = true }: PostListProps) {
                 <div className="post__profile-box">
                   <div className="post__profile" />
                   <div className="post__author-name">{post?.email}</div>
-                  <div className="post__date">{post?.createAt}</div>
+                  <div className="post__date">{post?.createdAt}</div>
                 </div>
                 <div className="post__title">{post?.title}</div>
                 <div className="post__text">{post?.summary}</div>
