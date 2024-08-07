@@ -356,6 +356,7 @@ input:checked + .carousel__slide-container .nav label {
   max-width: 680px;
   padding: 20px;
   margin-top: 20px;
+  height: 100vh;
 }
 .form input {
   height: 20px;
@@ -429,7 +430,7 @@ input:checked + .carousel__slide-container .nav label {
   border: 1px solid lightgray;
   max-width: 680px;
   height: 40px;
-  padding: 0px 20px;
+  padding: 10px 10px;
   border-radius: 0.3rem;
 }
 @keyframes rotation {
