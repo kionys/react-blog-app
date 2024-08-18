@@ -90,7 +90,7 @@
 2. 내가 쓴 글
 3. 댓글 CRUD
 
-## Git Commit Convention
+## Git Commit Convention 정의
 
 - add: 파일, 페이지 추가 및 컴포넌트 추가
 - update: 파일 기능 구현 및 로직 업데이트 적용
